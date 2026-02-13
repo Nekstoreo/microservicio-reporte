@@ -1,0 +1,18 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: microservicio-reporte
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/microservicio_reporte
+  security:
+    user:
+      name: admin
+      password: admin123
+  
+logging:
+  level:
+    root: INFO
+    com.onclass: DEBUG
