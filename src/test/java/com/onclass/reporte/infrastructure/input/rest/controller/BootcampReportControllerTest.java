@@ -34,11 +34,14 @@ class BootcampReportControllerTest {
     @Mock
     private AddEnrollmentToReportService addEnrollmentService;
 
+    @Mock
+    private com.onclass.reporte.application.usecase.GetMostEnrolledBootcampService getMostEnrolledService;
+
     private BootcampReportController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new BootcampReportController(registerService, addEnrollmentService);
+        controller = new BootcampReportController(registerService, addEnrollmentService, getMostEnrolledService);
     }
 
     @Test
