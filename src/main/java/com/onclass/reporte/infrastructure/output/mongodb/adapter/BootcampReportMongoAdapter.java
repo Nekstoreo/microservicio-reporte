@@ -45,6 +45,24 @@ public class BootcampReportMongoAdapter implements BootcampReportPersistencePort
             });
     }
 
+    @Override
+    public Mono<BootcampReport> findBootcampWithMostEnrollments() {
+        return repository.findAll()
+            .collectList()
+            .flatMap(reports -> {
+                if (reports.isEmpty()) {
+                    return Mono.empty();
+                }
+                return Mono.just(reports.stream()
+                    .max((r1, r2) -> Integer.compare(
+                        r1.getEnrollments() != null ? r1.getEnrollments().size() : 0,
+                        r2.getEnrollments() != null ? r2.getEnrollments().size() : 0
+                    ))
+                    .orElseThrow());
+            })
+            .map(this::toDomain);
+    }
+
     private BootcampReportDocument toDocument(BootcampReport report) {
         var capabilityDocs = report.getCapabilities() != null
             ? report.getCapabilities().stream()
