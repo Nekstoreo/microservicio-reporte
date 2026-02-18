@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .pathMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .pathMatchers(HttpMethod.POST, ApiConstants.REPORTS_BOOTCAMPS_PATH).authenticated()
                         .pathMatchers(HttpMethod.POST, ApiConstants.REPORTS_BOOTCAMPS_PATH + "/*/enrollments").authenticated()
+                        .pathMatchers(HttpMethod.GET, ApiConstants.REPORTS_BOOTCAMPS_PATH + "/most-enrolled").authenticated()
                         .pathMatchers(HttpMethod.PATCH, ApiConstants.REPORTS_BOOTCAMPS_PATH + "/**").authenticated()
                         .anyExchange().permitAll())
                 .httpBasic(Customizer.withDefaults())
