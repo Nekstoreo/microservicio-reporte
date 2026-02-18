@@ -5,6 +5,7 @@ import com.onclass.reporte.application.dto.request.RegisterBootcampReportRequest
 import com.onclass.reporte.application.dto.response.BootcampReportResponse;
 import com.onclass.reporte.application.mapper.BootcampReportMapper;
 import com.onclass.reporte.application.usecase.AddEnrollmentToReportService;
+import com.onclass.reporte.application.usecase.GetMostEnrolledBootcampService;
 import com.onclass.reporte.application.usecase.RegisterBootcampReportService;
 import com.onclass.reporte.domain.model.BootcampReport;
 import com.onclass.reporte.infrastructure.constants.ApiConstants;
@@ -27,11 +28,14 @@ public class BootcampReportController {
 
     private final RegisterBootcampReportService registerService;
     private final AddEnrollmentToReportService addEnrollmentService;
+    private final GetMostEnrolledBootcampService getMostEnrolledService;
 
     public BootcampReportController(RegisterBootcampReportService registerService,
-                                   AddEnrollmentToReportService addEnrollmentService) {
+                                   AddEnrollmentToReportService addEnrollmentService,
+                                   GetMostEnrolledBootcampService getMostEnrolledService) {
         this.registerService = registerService;
         this.addEnrollmentService = addEnrollmentService;
+        this.getMostEnrolledService = getMostEnrolledService;
     }
 
     @PostMapping
@@ -92,5 +96,31 @@ public class BootcampReportController {
         );
         return addEnrollmentService.execute(bootcampId, enrollmentData)
             .thenReturn(ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/most-enrolled")
+    @Operation(
+        summary = "Get bootcamp with most enrollments",
+        description = "Returns the bootcamp with the highest number of enrolled persons"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Bootcamp found successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = BootcampReportResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "No bootcamps found"
+        )
+    })
+    public Mono<ResponseEntity<BootcampReportResponse>> getMostEnrolledBootcamp() {
+        return getMostEnrolledService.execute()
+            .map(BootcampReportMapper::toResponse)
+            .map(ResponseEntity::ok)
+            .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }
