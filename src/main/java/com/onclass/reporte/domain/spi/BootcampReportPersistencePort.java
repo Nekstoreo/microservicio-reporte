@@ -10,4 +10,6 @@ public interface BootcampReportPersistencePort {
     Mono<BootcampReport> findByBootcampId(String bootcampId);
 
     Mono<BootcampReport> addEnrollment(String bootcampId, BootcampReport.EnrollmentData enrollment);
+
+    Mono<BootcampReport> findBootcampWithMostEnrollments();
 }

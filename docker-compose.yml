@@ -8,7 +8,6 @@ services:
       - "${MONGO_PORT:-27017}:27017"
     volumes:
       - reporte-mongodb-data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 volumes:
   reporte-mongodb-data:
