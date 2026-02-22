@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "app")
 public class ApplicationProperties {
-    // Propiedades específicas del microservicio Reporte
+
 }
