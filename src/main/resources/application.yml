@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: microservicio-reporte
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  data:
+    mongodb:
+      host: ${MONGODB_HOST:-localhost}
+      port: ${MONGO_PORT:-27017}
+      database: ${MONGO_DB_NAME:-report_db}
+  security:
+    user:
+      name: admin
+      password: ${ADMIN_PASSWORD:adminpassword}
+      roles: ADMIN
+
+server:
+  port: 8085
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+    include-exception: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method

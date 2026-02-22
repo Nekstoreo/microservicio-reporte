@@ -1,4 +1,4 @@
-package com.onclass.reporte.infrastructure.configuration;
+package com.onclass.reporte.infrastructure.configurations;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "app")
 public class ApplicationProperties {
-    // Propiedades específicas del microservicio Reporte
+
 }
