@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
@@ -20,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +37,6 @@ class BootcampReportServiceImplTest {
 
     @Test
     void should_create_bootcamp_report_when_valid_request() {
-        // Given
         RegisterBootcampReportRequest request = new RegisterBootcampReportRequest(
                 "1", "Java Bootcamp", "Learn Java", LocalDate.of(2024, 3, 1),
                 30, null, null, null
@@ -55,12 +54,10 @@ class BootcampReportServiceImplTest {
         );
 
         when(servicePort.registerReport(any(BootcampReport.class)))
-                .thenReturn(Mono.just(expectedReport));
+                .thenReturn(expectedReport);
 
-        // When
-        Mono<BootcampReportResponse> result = service.registerReport(request);
+        var result = service.registerReport(request);
 
-        // Then
         StepVerifier.create(result)
                 .assertNext(response -> {
                     assertNotNull(response);
@@ -72,7 +69,6 @@ class BootcampReportServiceImplTest {
 
     @Test
     void should_save_report_with_correct_data() {
-        // Given
         RegisterBootcampReportRequest request = new RegisterBootcampReportRequest(
                 "2", "Frontend Bootcamp", "Learn React", LocalDate.of(2024, 4, 1),
                 20, null, null, null
@@ -90,12 +86,10 @@ class BootcampReportServiceImplTest {
         );
 
         when(servicePort.registerReport(any(BootcampReport.class)))
-                .thenReturn(Mono.just(expectedReport));
+                .thenReturn(expectedReport);
 
-        // When
-        Mono<BootcampReportResponse> result = service.registerReport(request);
+        var result = service.registerReport(request);
 
-        // Then
         StepVerifier.create(result)
                 .assertNext(response -> {
                     assertNotNull(response.getReportId());
@@ -111,10 +105,9 @@ class BootcampReportServiceImplTest {
                 1L, "John Doe", "john@example.com", LocalDateTime.now()
         );
 
-        when(servicePort.addEnrollment(eq(bootcampId), any(BootcampReport.EnrollmentData.class)))
-                .thenReturn(Mono.empty());
+        doNothing().when(servicePort).addEnrollment(eq(bootcampId), any(BootcampReport.EnrollmentData.class));
 
-        Mono<Void> result = service.addEnrollment(bootcampId, enrollment);
+        var result = service.addEnrollment(bootcampId, enrollment);
 
         StepVerifier.create(result).verifyComplete();
     }
@@ -126,9 +119,9 @@ class BootcampReportServiceImplTest {
                 30, null, null, null
         );
 
-        when(servicePort.getMostEnrolledBootcamp()).thenReturn(Mono.just(report));
+        when(servicePort.getMostEnrolledBootcamp()).thenReturn(report);
 
-        Mono<BootcampReportResponse> result = service.getMostEnrolledBootcamp();
+        var result = service.getMostEnrolledBootcamp();
 
         StepVerifier.create(result)
                 .assertNext(response -> {

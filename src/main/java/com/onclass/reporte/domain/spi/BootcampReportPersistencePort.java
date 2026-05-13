@@ -1,21 +1,20 @@
 package com.onclass.reporte.domain.spi;
 
 import com.onclass.reporte.domain.models.BootcampReport;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import reactor.core.publisher.Mono;
+import com.onclass.reporte.domain.models.pagination.DomainPage;
+import com.onclass.reporte.domain.models.pagination.DomainPageRequest;
 
 public interface BootcampReportPersistencePort {
 
-    Mono<BootcampReport> save(BootcampReport report);
+    BootcampReport save(BootcampReport report);
 
-    Mono<BootcampReport> findByBootcampId(String bootcampId);
+    BootcampReport findByBootcampId(String bootcampId);
 
-    Mono<BootcampReport> addEnrollment(String bootcampId, BootcampReport.EnrollmentData enrollment);
+    BootcampReport addEnrollment(String bootcampId, BootcampReport.EnrollmentData enrollment);
 
-    Mono<BootcampReport> findBootcampWithMostEnrollments();
+    BootcampReport findBootcampWithMostEnrollments();
 
-    Mono<Page<BootcampReport>> findAll(Pageable pageable);
+    DomainPage<BootcampReport> findAll(DomainPageRequest pageRequest);
 
-    Mono<BootcampReport> findById(String bootcampId);
+    BootcampReport findById(String bootcampId);
 }

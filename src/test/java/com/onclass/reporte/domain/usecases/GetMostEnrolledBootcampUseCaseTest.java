@@ -8,13 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -47,19 +46,22 @@ class GetMostEnrolledBootcampUseCaseTest {
                 LocalDateTime.now()
         );
 
-        when(persistencePort.findBootcampWithMostEnrollments()).thenReturn(Mono.just(bootcamp));
+        when(persistencePort.findBootcampWithMostEnrollments()).thenReturn(bootcamp);
 
-        StepVerifier.create(useCase.getMostEnrolledBootcamp())
-                .expectNext(bootcamp)
-                .verifyComplete();
+        BootcampReport result = useCase.getMostEnrolledBootcamp();
+
+        assertNotNull(result);
+        assertEquals("1", result.getBootcampId());
+        assertEquals(2, result.getEnrollments().size());
     }
 
     @Test
-    void should_return_empty_when_no_bootcamps() {
-        when(persistencePort.findBootcampWithMostEnrollments()).thenReturn(Mono.empty());
+    void should_return_null_when_no_bootcamps() {
+        when(persistencePort.findBootcampWithMostEnrollments()).thenReturn(null);
 
-        StepVerifier.create(useCase.getMostEnrolledBootcamp())
-                .verifyComplete();
+        BootcampReport result = useCase.getMostEnrolledBootcamp();
+
+        assertNull(result);
     }
 
     @Test
@@ -69,11 +71,12 @@ class GetMostEnrolledBootcampUseCaseTest {
                 30, null, null, null
         );
 
-        when(persistencePort.save(any(BootcampReport.class))).thenReturn(Mono.just(report));
+        when(persistencePort.save(any(BootcampReport.class))).thenReturn(report);
 
-        StepVerifier.create(useCase.registerReport(report))
-                .expectNext(report)
-                .verifyComplete();
+        BootcampReport result = useCase.registerReport(report);
+
+        assertNotNull(result);
+        assertEquals("1", result.getBootcampId());
     }
 
     @Test
@@ -84,11 +87,9 @@ class GetMostEnrolledBootcampUseCaseTest {
         );
 
         when(persistencePort.addEnrollment(eq(bootcampId), any(BootcampReport.EnrollmentData.class)))
-                .thenReturn(Mono.empty());
+                .thenReturn(null);
 
-        StepVerifier.create(useCase.addEnrollment(bootcampId, enrollment))
-                .expectError(BootcampReportException.class)
-                .verify();
+        assertThrows(BootcampReportException.class, () -> useCase.addEnrollment(bootcampId, enrollment));
     }
 
     @Test
@@ -103,9 +104,8 @@ class GetMostEnrolledBootcampUseCaseTest {
         );
 
         when(persistencePort.addEnrollment(eq(bootcampId), any(BootcampReport.EnrollmentData.class)))
-                .thenReturn(Mono.just(report));
+                .thenReturn(report);
 
-        StepVerifier.create(useCase.addEnrollment(bootcampId, enrollment))
-                .verifyComplete();
+        assertDoesNotThrow(() -> useCase.addEnrollment(bootcampId, enrollment));
     }
 }

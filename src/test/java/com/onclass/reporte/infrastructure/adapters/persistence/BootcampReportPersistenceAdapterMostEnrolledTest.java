@@ -9,12 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,19 +47,19 @@ class BootcampReportPersistenceAdapterMostEnrolledTest {
 
         when(repository.findAll()).thenReturn(Flux.just(entity1, entity2));
 
-        StepVerifier.create(adapter.findBootcampWithMostEnrollments())
-                .expectNextMatches(report ->
-                        report.getBootcampId().equals("1") &&
-                                report.getEnrollments().size() == 2
-                )
-                .verifyComplete();
+        var result = adapter.findBootcampWithMostEnrollments();
+
+        assertNotNull(result);
+        assertEquals("1", result.getBootcampId());
+        assertEquals(2, result.getEnrollments().size());
     }
 
     @Test
-    void should_return_empty_when_no_reports() {
+    void should_return_null_when_no_reports() {
         when(repository.findAll()).thenReturn(Flux.empty());
 
-        StepVerifier.create(adapter.findBootcampWithMostEnrollments())
-                .verifyComplete();
+        var result = adapter.findBootcampWithMostEnrollments();
+
+        assertNull(result);
     }
 }

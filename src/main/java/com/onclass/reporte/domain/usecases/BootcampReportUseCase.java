@@ -4,13 +4,10 @@ import com.onclass.reporte.domain.api.BootcampReportServicePort;
 import com.onclass.reporte.domain.exceptions.BootcampReportException;
 import com.onclass.reporte.domain.exceptions.BootcampReportExceptionCodes;
 import com.onclass.reporte.domain.models.BootcampReport;
+import com.onclass.reporte.domain.models.pagination.DomainPage;
+import com.onclass.reporte.domain.models.pagination.DomainPageRequest;
 import com.onclass.reporte.domain.spi.BootcampReportPersistencePort;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
-@Component
 public class BootcampReportUseCase implements BootcampReportServicePort {
 
     private final BootcampReportPersistencePort persistencePort;
@@ -20,34 +17,38 @@ public class BootcampReportUseCase implements BootcampReportServicePort {
     }
 
     @Override
-    public Mono<BootcampReport> registerReport(BootcampReport report) {
+    public BootcampReport registerReport(BootcampReport report) {
         return persistencePort.save(report);
     }
 
     @Override
-    public Mono<BootcampReport> getMostEnrolledBootcamp() {
+    public BootcampReport getMostEnrolledBootcamp() {
         return persistencePort.findBootcampWithMostEnrollments();
     }
 
     @Override
-    public Mono<Void> addEnrollment(String bootcampId, BootcampReport.EnrollmentData enrollment) {
-        return persistencePort.addEnrollment(bootcampId, enrollment)
-                .switchIfEmpty(Mono.error(new BootcampReportException(
-                        BootcampReportExceptionCodes.REPORT_NOT_FOUND,
-                        BootcampReportExceptionCodes.REPORT_NOT_FOUND_MESSAGE + bootcampId)))
-                .then();
+    public void addEnrollment(String bootcampId, BootcampReport.EnrollmentData enrollment) {
+        BootcampReport report = persistencePort.addEnrollment(bootcampId, enrollment);
+        if (report == null) {
+            throw new BootcampReportException(
+                    BootcampReportExceptionCodes.REPORT_NOT_FOUND,
+                    BootcampReportExceptionCodes.REPORT_NOT_FOUND_MESSAGE + bootcampId);
+        }
     }
 
     @Override
-    public Mono<Page<BootcampReport>> findAll(Pageable pageable) {
-        return persistencePort.findAll(pageable);
+    public DomainPage<BootcampReport> findAll(DomainPageRequest pageRequest) {
+        return persistencePort.findAll(pageRequest);
     }
 
     @Override
-    public Mono<BootcampReport> findById(String bootcampId) {
-        return persistencePort.findById(bootcampId)
-                .switchIfEmpty(Mono.error(new BootcampReportException(
-                        BootcampReportExceptionCodes.REPORT_NOT_FOUND,
-                        BootcampReportExceptionCodes.REPORT_NOT_FOUND_MESSAGE + bootcampId)));
+    public BootcampReport findById(String bootcampId) {
+        BootcampReport report = persistencePort.findById(bootcampId);
+        if (report == null) {
+            throw new BootcampReportException(
+                    BootcampReportExceptionCodes.REPORT_NOT_FOUND,
+                    BootcampReportExceptionCodes.REPORT_NOT_FOUND_MESSAGE + bootcampId);
+        }
+        return report;
     }
 }
