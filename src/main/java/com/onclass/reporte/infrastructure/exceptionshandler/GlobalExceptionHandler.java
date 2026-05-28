@@ -37,7 +37,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex, ServerWebExchange exchange) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", exchange);
+        System.err.println("--- UNEXPECTED EXCEPTION OCCURRED ---");
+        ex.printStackTrace();
+        System.err.println("-------------------------------------");
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage(), exchange);
     }
 
     private ResponseEntity<ErrorResponse> buildError(HttpStatus status, String message, ServerWebExchange exchange) {

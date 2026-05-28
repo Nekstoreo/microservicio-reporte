@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -72,7 +73,7 @@ class BootcampReportPersistenceAdapterTest {
         );
 
         when(repository.findByBootcampId(bootcampId))
-                .thenReturn(Mono.just(entity));
+                .thenReturn(Flux.just(entity));
 
         var result = adapter.findByBootcampId(bootcampId);
 
@@ -99,7 +100,7 @@ class BootcampReportPersistenceAdapterTest {
         );
 
         when(repository.findByBootcampId(bootcampId))
-                .thenReturn(Mono.just(existingEntity));
+                .thenReturn(Flux.just(existingEntity));
         when(repository.save(any(BootcampReportEntity.class)))
                 .thenReturn(Mono.just(updatedEntity));
 

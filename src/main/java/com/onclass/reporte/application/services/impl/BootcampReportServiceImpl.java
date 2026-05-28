@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class BootcampReportServiceImpl implements BootcampReportService {
@@ -30,12 +31,12 @@ public class BootcampReportServiceImpl implements BootcampReportService {
             BootcampReport report = BootcampReportDtoMapper.toModel(request);
             BootcampReport result = servicePort.registerReport(report);
             return BootcampReportDtoMapper.toResponse(result);
-        });
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     @Override
     public Mono<Void> addEnrollment(String bootcampId, EnrollmentRequestData enrollment) {
-        return Mono.fromRunnable(() -> {
+        return Mono.<Void>fromRunnable(() -> {
             var enrollmentData = new BootcampReport.EnrollmentData(
                     enrollment.getPersonId(),
                     enrollment.getName(),
@@ -43,7 +44,7 @@ public class BootcampReportServiceImpl implements BootcampReportService {
                     enrollment.getEnrollmentDate()
             );
             servicePort.addEnrollment(bootcampId, enrollmentData);
-        });
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BootcampReportServiceImpl implements BootcampReportService {
         return Mono.fromCallable(() -> {
             BootcampReport result = servicePort.getMostEnrolledBootcamp();
             return result != null ? BootcampReportDtoMapper.toResponse(result) : null;
-        });
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     @Override
@@ -62,14 +63,14 @@ public class BootcampReportServiceImpl implements BootcampReportService {
                     pageable.getPageSize(),
                     pageable.getSort().isSorted() ? pageable.getSort().iterator().next().getProperty() : "bootcampName",
                     pageable.getSort().isSorted() && pageable.getSort().iterator().next().isDescending() ? "desc" : "asc"
-            );
+                );
             DomainPage<BootcampReport> page = servicePort.findAll(pageRequest);
-            return new PageImpl<>(
+            return (Page<BootcampReportResponse>) new PageImpl<>(
                     page.content().stream().map(BootcampReportDtoMapper::toResponse).toList(),
                     pageable,
                     page.totalElements()
             );
-        });
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     @Override
@@ -77,6 +78,7 @@ public class BootcampReportServiceImpl implements BootcampReportService {
         return Mono.fromCallable(() -> {
             BootcampReport result = servicePort.findById(bootcampId);
             return BootcampReportDtoMapper.toResponse(result);
-        });
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 }
+

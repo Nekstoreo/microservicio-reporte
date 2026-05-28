@@ -31,6 +31,7 @@ public class BootcampReportPersistenceAdapter implements BootcampReportPersisten
     @Override
     public BootcampReport findByBootcampId(String bootcampId) {
         return repository.findByBootcampId(bootcampId)
+                .next()
                 .map(BootcampReportEntityMapper::toModel)
                 .block();
     }
@@ -82,7 +83,8 @@ public class BootcampReportPersistenceAdapter implements BootcampReportPersisten
 
     @Override
     public BootcampReport findById(String bootcampId) {
-        return repository.findById(bootcampId)
+        return repository.findByBootcampId(bootcampId)
+                .next()
                 .map(BootcampReportEntityMapper::toModel)
                 .block();
     }
